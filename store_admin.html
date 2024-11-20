@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店舗管理画面 - Tournament Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #f0f2f5;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #1a237e;
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            color: white;
+        }
+
+        .logo {
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .welcome-title {
+            font-size: 1.5rem;
+            color: #1a237e;
+            margin-bottom: 1rem;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            color: #1a237e;
+            font-weight: bold;
+        }
+
+        .upcoming-events {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #1a237e;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e1e4e8;
+        }
+
+        .event-list {
+            list-style: none;
+        }
+
+        .event-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e1e4e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .event-info h4 {
+            color: #1a237e;
+            margin-bottom: 0.3rem;
+        }
+
+        .event-meta {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-primary {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: #1a237e;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+            .main-content {
+                margin-left: 60px;
+            }
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>店舗管理画面</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#" class="nav-link active">ダッシュボード</a></li>
+                    <li><a href="./event.html" class="nav-link">イベント管理</a></li>
+                    <li><a href="./list.html" class="nav-link">ユーザー管理</a></li>
+                    <li><a href="./tournament.html" class="nav-link">トーナメント管理</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <section class="welcome-section">
+                <h2 class="welcome-title">トーナメントセンター東京店</h2>
+                <p>今日も1日よろしくお願いします！</p>
+            </section>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-title">本日の大会数</div>
+                    <div class="stat-value">3</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">参加予定者数</div>
+                    <div class="stat-value">84</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">月間エントリー数</div>
+                    <div class="stat-value">256</div>
+                </div>
+            </div>
+
+            <section class="upcoming-events">
+                <h3 class="section-title">本日の大会スケジュール</h3>
+                <ul class="event-list">
+                    <li class="event-item">
+                        <div class="event-info">
+                            <h4>ウィークリートーナメント</h4>
+                            <div class="event-meta">14:00開始 - 参加者:32名</div>
+                        </div>
+                        <span class="badge badge-primary">エントリー受付中</span>
+                    </li>
+                    <li class="event-item">
+                        <div class="event-info">
+                            <h4>チャンピオンシップ予選</h4>
+                            <div class="event-meta">16:00開始 - 参加者:24名</div>
+                        </div>
+                        <span class="badge badge-primary">エントリー受付中</span>
+                    </li>
+                    <li class="event-item">
+                        <div class="event-info">
+                            <h4>ビギナーズトーナメント</h4>
+                            <div class="event-meta">18:00開始 - 参加者:28名</div>
+                        </div>
+                        <span class="badge badge-primary">エントリー受付中</span>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // ナビゲーションのアクティブ状態管理
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                document.querySelector('.nav-link.active')?.classList.remove('active');
+                e.target.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

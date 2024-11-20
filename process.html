@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大会履歴管理 - Tournament Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* サイドバーのスタイルは同じため省略 */
+        .sidebar {
+            width: 250px;
+            background: #1a237e;
+            color: white;
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        /* 検索・フィルターセクション */
+        .filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.8rem;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        /* 大会一覧テーブル */
+        .tournament-table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .tournament-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tournament-table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: bold;
+            color: #1a237e;
+            border-bottom: 2px solid #e1e4e8;
+        }
+
+        .tournament-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e1e4e8;
+        }
+
+        .tournament-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* データセル特別スタイル */
+        .revenue {
+            font-family: monospace;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .tournament-name {
+            color: #1a237e;
+            font-weight: 500;
+        }
+
+        .date {
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .tournament-type {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .type-championship {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .type-weekly {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .type-special {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* ページネーション */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #e1e4e8;
+        }
+
+        .page-info {
+            color: #666;
+        }
+
+        .page-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .page-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e1e4e8;
+            border-radius: 4px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-button:hover {
+            background: #f8f9fa;
+            border-color: #1a237e;
+            color: #1a237e;
+        }
+
+        .page-button.active {
+            background: #1a237e;
+            color: white;
+            border-color: #1a237e;
+        }
+
+        .button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .button-primary {
+            background: #1a237e;
+            color: white;
+        }
+
+        .button-secondary {
+            background: #e1e4e8;
+            color: #333;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 1200px) {
+            .tournament-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .main-content {
+                margin-left: 60px;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- サイドバー（省略） -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Admin</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">ダッシュボード</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">店舗管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">ユーザー管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">大会進行</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">データ分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">ランキング</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">広告・プロモーション</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <div class="filters">
+                <div class="filter-group">
+                    <label>期間</label>
+                    <input type="month" value="2024-11">
+                </div>
+                <div class="filter-group">
+                    <label>店舗</label>
+                    <select>
+                        <option>全ての店舗</option>
+                        <option>東京店</option>
+                        <option>大阪店</option>
+                        <option>名古屋店</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>大会タイプ</label>
+                    <select>
+                        <option>全てのタイプ</option>
+                        <option>チャンピオンシップ</option>
+                        <option>ウィークリー</option>
+                        <option>スペシャル</option>
+                    </select>
+                </div>
+                <div class="filter-buttons">
+                    <button class="button button-primary">検索</button>
+                    <button class="button button-secondary">CSVダウンロード</button>
+                </div>
+            </div>
+
+            <div class="tournament-table-container">
+                <table class="tournament-table">
+                    <thead>
+                        <tr>
+                            <th>開催日</th>
+                            <th>大会名</th>
+                            <th>店舗</th>
+                            <th>参加者数</th>
+                            <th>総売上</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="date">2024/11/20</td>
+                            <td class="tournament-name">冬季チャンピオンシップ</td>
+                            <td>東京店</td>
+                            <td>64/64名</td>
+                            <td class="revenue">¥320,000</td>
+                            <td><button class="button button-secondary">詳細</button></td>
+                        </tr>
+                        <tr>
+                            <td class="date">2024/11/19</td>
+                            <td class="tournament-name">週末トーナメント</td>
+                            <td>大阪店</td>
+                            <td>32/32名</td>
+                            <td class="revenue">¥96,000</td>
+                            <td><button class="button button-secondary">詳細</button></td>
+                        </tr>
+                        <tr>
+                            <td class="date">2024/11/18</td>
+                            <td class="tournament-name">アニバーサリー大会</td>
+                            <td>名古屋店</td>
+                            <td>48/48名</td>
+                            <td class="revenue">¥240,000</td>
+                            <td><button class="button button-secondary">詳細</button></td>
+                        </tr>
+                        <!-- 他の大会データ -->
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <div class="page-info">1-10 / 150件</div>
+                    <div class="page-buttons">
+                        <button class="page-button">←</button>
+                        <button class="page-button active">1</button>
+                        <button class="page-button">2</button>
+                        <button class="page-button">3</button>
+                        <button class="page-button">→</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // フィルター機能
+        document.querySelector('.button-primary').addEventListener('click', () => {
+            // 検索処理
+            alert('検索機能は実装予定です');
+        });
+
+        // CSVダウンロード
+        document.querySelector('.button-secondary').addEventListener('click', () => {
+            alert('CSVダウンロードを開始します');
+        });
+
+        // 詳細ボタン
+        document.querySelectorAll('.tournament-table button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const row = e.target.closest('tr');
+                const tournamentName = row.querySelector('.tournament-name').textContent;
+                alert(`${tournamentName}の詳細ページへ移動します`);
+            });
+        });
+
+        // ページネーション
+        document.querySelectorAll('.page-button').forEach(button => {
+            button.addEventListener('click', () => {
+                if (!button.classList.contains('active')) {
+                    document.querySelector('.page-button.active').classList.remove('active');
+                    button.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

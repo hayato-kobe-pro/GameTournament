@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大会詳細 - Tournament Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .header {
+            background-color: #2e51a2;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .tournament-hero {
+            height: 40vh;
+            background-image: url('/api/placeholder/1200/400');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .tournament-info {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-section {
+            margin-bottom: 2rem;
+        }
+
+        .info-section h3 {
+            color: #2e51a2;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e1e4e8;
+        }
+
+        .tournament-sidebar {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #4CAF50;
+            color: white;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .participant-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .participant-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e1e4e8;
+        }
+
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            background-color: #e1e4e8;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #2e51a2, #5d7ec0);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(46,81,162,0.4);
+        }
+
+        .timeline {
+            list-style: none;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e1e4e8;
+        }
+
+        .timeline-item {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #2e51a2;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>店舗大会システム</h1>
+        <nav class="nav-menu">
+            <a href="#" id="mypage">マイページ</a>
+            <a href="#" id="notifications">お知らせ</a>
+            <a href="#" id="settings">設定</a>
+            <a href="#" id="logout">ログアウト</a>
+        </nav>
+    </header>
+
+    <div class="tournament-hero">
+        <div class="hero-overlay">
+            <h1>チャンピオンシップ2024</h1>
+            <p>全国規模の年間王者決定戦</p>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="tournament-info">
+            <div class="info-section">
+                <h3>大会概要</h3>
+                <p>本大会は、年間を通じて最も優れた成績を収めたプレイヤーを決定する大会です。優勝者には賞金と共に、次年度の招待枠が与えられます。</p>
+            </div>
+
+            <div class="info-section">
+                <h3>開催情報</h3>
+                <ul>
+                    <li>開催日: 2024年11月30日</li>
+                    <li>開催場所: 大阪メインアリーナ</li>
+                    <li>参加費: 5,000円</li>
+                    <li>定員: 128名</li>
+                </ul>
+            </div>
+
+            <div class="info-section">
+                <h3>タイムスケジュール</h3>
+                <ul class="timeline">
+                    <li class="timeline-item">
+                        <strong>9:00</strong> - 受付開始
+                    </li>
+                    <li class="timeline-item">
+                        <strong>10:00</strong> - 開会式
+                    </li>
+                    <li class="timeline-item">
+                        <strong>10:30</strong> - 予選リーグ開始
+                    </li>
+                    <li class="timeline-item">
+                        <strong>14:00</strong> - 決勝トーナメント開始
+                    </li>
+                    <li class="timeline-item">
+                        <strong>18:00</strong> - 決勝戦
+                    </li>
+                    <li class="timeline-item">
+                        <strong>19:00</strong> - 表彰式
+                    </li>
+                </ul>
+            </div>
+
+            <div class="info-section">
+                <h3>賞金・賞品</h3>
+                <ul>
+                    <li>優勝: 50万円 + 次年度シード権</li>
+                    <li>準優勝: 30万円</li>
+                    <li>3位: 10万円</li>
+                </ul>
+            </div>
+        </div>
+
+        <aside class="tournament-sidebar">
+            <div class="status-badge">エントリー受付中</div>
+            <p>参加登録状況: 96/128名</p>
+            <button class="button" onclick="location.href='https://ffsales-demo.eventos.tokyo/web/portal/660/event/12451/module/ticket/315379'">エントリーする</button>
+
+            <div class="info-section">
+                <h3>最近のエントリー</h3>
+                <ul class="participant-list">
+                    <li class="participant-item">
+                        <div class="participant-avatar"></div>
+                        <span>Player 1</span>
+                    </li>
+                    <li class="participant-item">
+                        <div class="participant-avatar"></div>
+                        <span>Player 2</span>
+                    </li>
+                    <li class="participant-item">
+                        <div class="participant-avatar"></div>
+                        <span>Player 3</span>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+    </script>
+</body>
+</html>

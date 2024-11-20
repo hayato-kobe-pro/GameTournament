@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>トーナメント表 - Tournament Portal</title>
+    <style>
+        /* 前回までのベーススタイルは維持 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            padding-top: 60px;
+        }
+
+        .header {
+            background-color: #2e51a2;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tournament-title {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* トーナメント表のコンテナスタイルを更新 */
+        .tournament-container {
+            padding: 2rem;
+            overflow-x: auto;
+            min-height: calc(100vh - 180px);
+        }
+
+        .bracket {
+            display: flex;
+            justify-content: space-between;
+            min-width: 1200px;
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .round {
+            display: flex;
+            flex-direction: column;
+            width: 250px; /* 固定幅に変更 */
+        }
+
+        .round-title {
+            text-align: center;
+            color: #2e51a2;
+            margin-bottom: 2rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* マッチカードのスタイルを更新 */
+        .match-wrapper {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .match {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 220px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .player {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e1e4e8;
+            height: 50px; /* 高さを固定 */
+        }
+
+        .player:last-child {
+            border-bottom: none;
+        }
+
+        .player.winner {
+            background-color: #e3f2fd;
+            font-weight: bold;
+        }
+
+        /* 接続線のスタイル */
+        .connector-wrapper {
+            position: absolute;
+            top: 50%;
+            width: 30px;
+            right: -30px;
+            display: flex;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .horizontal-line {
+            height: 2px;
+            background-color: #2e51a2;
+            flex-grow: 1;
+        }
+
+        .vertical-connector {
+            position: absolute;
+            right: -30px;
+            width: 2px;
+            background-color: #2e51a2;
+            z-index: 1;
+        }
+
+        /* マッチ間の垂直距離を調整 */
+        .round:nth-child(1) .match-wrapper {
+            margin: 1rem 0;
+        }
+
+        .round:nth-child(2) .match-wrapper {
+            margin: 3rem 0;
+        }
+
+        .round:nth-child(3) .match-wrapper {
+            margin: 7rem 0;
+        }
+
+        /* ステータス表示のスタイル更新 */
+        .match-status {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            right: 0;
+            padding: 0.2rem;
+            font-size: 0.7rem;
+            text-align: center;
+            background: #2e51a2;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #f44336;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        .navigation {
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            padding: 0.5rem 1rem;
+            background: #2e51a2;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(46,81,162,0.4);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>店舗管理画面</h1>
+    </header>
+
+    <div class="tournament-title">
+        <h2>チャンピオンシップ2024 - トーナメント表</h2>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button">予選プール A</button>
+        <button class="nav-button">予選プール B</button>
+        <button class="nav-button">決勝トーナメント</button>
+    </div>
+
+    <div class="tournament-container">
+        <div class="bracket">
+            <!-- 準々決勝 -->
+            <div class="round">
+                <div class="round-title">準々決勝</div>
+                <div class="match-wrapper">
+                    <div class="match">
+                        <div class="match-status">試合終了</div>
+                        <div class="player winner">
+                            <span class="player-name">Player 1</span>
+                            <span class="score">3</span>
+                        </div>
+                        <div class="player">
+                            <span class="player-name">Player 2</span>
+                            <span class="score">1</span>
+                        </div>
+                    </div>
+                    <div class="connector-wrapper">
+                        <div class="horizontal-line"></div>
+                    </div>
+                </div>
+                <div class="match-wrapper">
+                    <div class="match">
+                        <div class="match-status">
+                            <span class="live-indicator"></span>LIVE
+                        </div>
+                        <div class="player">
+                            <span class="player-name">Player 3</span>
+                            <span class="score">2</span>
+                        </div>
+                        <div class="player">
+                            <span class="player-name">Player 4</span>
+                            <span class="score">2</span>
+                        </div>
+                    </div>
+                    <div class="connector-wrapper">
+                        <div class="horizontal-line"></div>
+                    </div>
+                </div>
+                <div class="match-wrapper">
+                    <div class="match">
+                        <div class="match-status">試合終了</div>
+                        <div class="player winner">
+                            <span class="player-name">Player 5</span>
+                            <span class="score">3</span>
+                        </div>
+                        <div class="player">
+                            <span class="player-name">Player 6</span>
+                            <span class="score">0</span>
+                        </div>
+                    </div>
+                    <div class="connector-wrapper">
+                        <div class="horizontal-line"></div>
+                    </div>
+                </div>
+                <div class="match-wrapper">
+                    <div class="match">
+                        <div class="match-status">14:00開始</div>
+                        <div class="player">
+                            <span class="player-name">Player 7</span>
+                            <span class="score">-</span>
+                        </div>
+                        <div class="player">
+                            <span class="player-name">Player 8</span>
+                            <span class="score">-</span>
+                        </div>
+                    </div>
+                    <div class="connector-wrapper">
+                        <div class="horizontal-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 準決勝 -->
+            <div class="round">
+                <div class="round-title">準決勝</div>
+                <div class="match-wrapper">
+                    <div class="match">
+                        <div class="match-status">15:00開始</div>
+                        <div class="player">
+                            <span class="player-name">Player 1</span>
+                            <span class="score">-</span>
+                        </div>
+                        <div class="player">
+                            <span class="player-name">TBD</span>
+                            <span class="score">-</span>
+                        </div>
+                    </div>
+                    <div class="connector-wrapper">
+                        <div class="horizontal-line"></div>
+                    </div>
+                </div>
+                <div class="match-wrapper">
+                    <div class="match">
+                        <div class="match-status">16:00開始</div>
+                        <div class="player">
+                            <span class="player-name">Player 5</span>
+                            <span class="score">-</span>
+                        </div>
+                        <div class="player">
+                            <span class="player-name">TBD</span>
+                            <span class="score">-</span>
+                        </div>
+                    </div>
+                    <div class="connector-wrapper">
+                        <div class="horizontal-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 決勝 -->
+            <div class="round">
+                <div class="round-title">決勝</div>
+                <div class="match-wrapper">
+                    <div class="match">
+                        <div class="match-status">18:00開始</div>
+                        <div class="player">
+                            <span class="player-name">TBD</span>
+                            <span class="score">-</span>
+                        </div>
+                        <div class="player">
+                            <span class="player-name">TBD</span>
+                            <span class="score">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // マッチ間の接続線を動的に生成
+        document.addEventListener('DOMContentLoaded', () => {
+            const rounds = document.querySelectorAll('.round');
+            rounds.forEach((round, roundIndex) => {
+                if (roundIndex < rounds.length - 1) {
+                    const matches = round.querySelectorAll('.match-wrapper');
+                    matches.forEach((match, matchIndex) => {
+                        const nextRoundMatch = Math.floor(matchIndex / 2);
+                        const connector = document.createElement('div');
+                        connector.className = 'vertical-connector';
+                        
+                        // 垂直線の高さと位置を計算
+                        const currentPos = match.offsetTop + match.offsetHeight / 2;
+                        const nextMatch = rounds[roundIndex + 1].querySelectorAll('.match-wrapper')[nextRoundMatch];
+                        const nextPos = nextMatch.offsetTop + nextMatch.offsetHeight / 2;
+                        
+                        connector.style.top = `${currentPos}px`;
+                        connector.style.height = `${nextPos - currentPos}px`;
+                        
+                        round.appendChild(connector);
+                    });
+                }
+            });
+        });
+
+        // プール切り替え機能
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', () => {
+                alert('プール切り替え機能は実装予定です');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ダッシュボード - Tournament Portal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 250px;
+            background: #1a237e;
+            color: white;
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo {
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        /* クイックステータス */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #1a237e;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-title {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1a237e;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            color: #4caf50;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .stat-change::before {
+            content: '↑';
+        }
+
+        .stat-change.negative {
+            color: #f44336;
+        }
+
+        .stat-change.negative::before {
+            content: '↓';
+        }
+
+        /* アラートセクション */
+        .alert-section {
+            background: #fff3e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .alert-title {
+            font-size: 1.2rem;
+            color: #f57c00;
+            font-weight: bold;
+        }
+
+        .alert-list {
+            list-style: none;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-icon {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        /* チャートグリッド */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            color: #1a237e;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+</style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Admin Portal</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">ダッシュボード</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="./store.html" class="nav-link">店舗管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">ユーザー管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="./process.html" class="nav-link">大会進行</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">データ分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">ランキング</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">広告・プロモーション</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">🏪</div>
+                    <div class="stat-title">登録店舗数</div>
+                    <div class="stat-value">342</div>
+                    <div class="stat-change">+12 過去30日</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-title">総ユーザー数</div>
+                    <div class="stat-value">15,487</div>
+                    <div class="stat-change">+856 過去30日</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎮</div>
+                    <div class="stat-title">進行中の大会</div>
+                    <div class="stat-value">28</div>
+                    <div class="stat-change">現在開催中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-title">月間エントリー数</div>
+                    <div class="stat-value">4,256</div>
+                    <div class="stat-change">+15.2% 前月比</div>
+                </div>
+            </div>
+
+            <!-- 続きは次のパートに -->
+            <div class="alert-section">
+                <div class="alert-header">
+                    <h3 class="alert-title">注意が必要な項目</h3>
+                </div>
+                <ul class="alert-list">
+                    <li class="alert-item">
+                        <span class="alert-icon">⚠️</span>
+                        <span>3店舗で大会進行に遅延が発生しています</span>
+                    </li>
+                    <li class="alert-item">
+                        <span class="alert-icon">⚠️</span>
+                        <span>システムメンテナンスが明日予定されています</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">月間エントリー数推移</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="entriesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">店舗別パフォーマンス</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="storeChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">ユーザー属性分布</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="userChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">時間帯別参加傾向</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // レスポンシブ設定
+        Chart.defaults.responsive = true;
+        Chart.defaults.maintainAspectRatio = false;
+
+        // チャートの共通オプション
+        const commonOptions = {
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        };
+
+        // 月間エントリー数推移チャート
+        const entriesChart = new Chart(document.getElementById('entriesChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['7月', '8月', '9月', '10月', '11月'],
+                datasets: [
+                    {
+                        label: '2024年',
+                        data: [3200, 3800, 3500, 4100, 4256],
+                        borderColor: '#1a237e',
+                        backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: '2023年',
+                        data: [2800, 3000, 3200, 3400, 3600],
+                        borderColor: '#90caf9',
+                        backgroundColor: 'rgba(144, 202, 249, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 店舗別パフォーマンスチャート
+        const storeChart = new Chart(document.getElementById('storeChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['東京店', '大阪店', '名古屋店', '福岡店', '札幌店'],
+                datasets: [{
+                    label: '参加者数',
+                    data: [450, 380, 320, 280, 250],
+                    backgroundColor: [
+                        'rgba(26, 35, 126, 0.8)',
+                        'rgba(26, 35, 126, 0.7)',
+                        'rgba(26, 35, 126, 0.6)',
+                        'rgba(26, 35, 126, 0.5)',
+                        'rgba(26, 35, 126, 0.4)'
+                    ]
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // ユーザー属性分布チャート
+        const userChart = new Chart(document.getElementById('userChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['一般プレイヤー', 'プロプレイヤー', '新規ユーザー', 'VIPユーザー'],
+                datasets: [{
+                    data: [8500, 500, 3000, 1000],
+                    backgroundColor: [
+                        '#1a237e',
+                        '#303f9f',
+                        '#3f51b5',
+                        '#7986cb'
+                    ]
+                }]
+            },
+            options: {
+                ...commonOptions,
+                cutout: '60%'
+            }
+        });
+
+        // 時間帯別参加傾向チャート
+        const timeChart = new Chart(document.getElementById('timeChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['10時', '12時', '14時', '16時', '18時', '20時', '22時'],
+                datasets: [{
+                    label: '参加者数',
+                    data: [20, 45, 75, 90, 100, 85, 40],
+                    fill: true,
+                    backgroundColor: 'rgba(26, 35, 126, 0.2)',
+                    borderColor: '#1a237e',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // サイドバーのアクティブ状態管理
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                document.querySelector('.nav-link.active').classList.remove('active');
+                e.target.classList.add('active');
+            });
+        });
+
+        // レスポンシブ対応
+        window.addEventListener('resize', () => {
+            entriesChart.resize();
+            storeChart.resize();
+            userChart.resize();
+            timeChart.resize();
+        });
+    </script>
+
+    <style>
+        /* レスポンシブ対応のための追加スタイル */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: 1rem 0.5rem;
+            }
+
+            .logo h1 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+
+            .nav-link span {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 60px;
+            }
+
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</body>
+</html>

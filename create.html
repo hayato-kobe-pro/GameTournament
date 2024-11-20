@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント作成</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            padding-top: 60px;
+        }
+
+        .header {
+            background-color: #2e51a2;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-title {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e1e4e8;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2e51a2;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="datetime-local"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2e51a2;
+            box-shadow: 0 0 0 2px rgba(46,81,162,0.2);
+        }
+
+        .image-upload {
+            border: 2px dashed #e1e4e8;
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload:hover {
+            border-color: #2e51a2;
+            background-color: rgba(46,81,162,0.05);
+        }
+
+        .image-preview {
+            max-width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            margin-top: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .button-primary {
+            background: #2e51a2;
+            color: white;
+        }
+
+        .button-secondary {
+            background: #e1e4e8;
+            color: #333;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 0.5rem;
+            }
+
+            .form-card {
+                padding: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>店舗管理画面</h1>
+    </header>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>イベント作成</h2>
+        </div>
+
+        <form class="form-card" id="eventForm">
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="eventImage">イベント画像</label>
+                    <div class="image-upload" id="imageUpload">
+                        <div id="dropZone">
+                            <p>クリックまたはドラッグ＆ドロップで画像をアップロード</p>
+                            <input type="file" id="eventImage" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
+                    <p class="help-text">推奨サイズ: 1200 x 630px, 最大5MB</p>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="eventName">イベント名 *</label>
+                    <input type="text" id="eventName" required placeholder="例：第1回 店舗チャンピオンシップ">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDateTime">開催日時 *</label>
+                    <input type="datetime-local" id="eventDateTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventFormat">開催形式 *</label>
+                    <select id="eventFormat" required>
+                        <option value="">選択してください</option>
+                        <option value="offline">オフライン</option>
+                        <option value="online">オンライン</option>
+                        <option value="hybrid">ハイブリッド</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="tournamentFormat">トーナメント形式 *</label>
+                    <select id="tournamentFormat" required>
+                        <option value="">選択してください</option>
+                        <option value="single">シングルエリミネーション</option>
+                        <option value="double">ダブルエリミネーション</option>
+                        <option value="round_robin">総当たり戦</option>
+                        <option value="swiss">スイス式</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="participantLimit">参加人数上限 *</label>
+                    <input type="number" id="participantLimit" required min="2" placeholder="例：32">
+                    <p class="help-text">2名以上の値を入力してください</p>
+                </div>
+
+                <div class="form-group">
+                    <label>参加方式 *</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="firstCome" name="entryMethod" value="first_come" required>
+                            <label for="firstCome">先着順</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="lottery" name="entryMethod" value="lottery">
+                            <label for="lottery">抽選</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="eventDescription">イベント詳細</label>
+                    <textarea id="eventDescription" rows="5" placeholder="イベントの詳細な説明を入力してください"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventRules">ルール・注意事項</label>
+                    <textarea id="eventRules" rows="5" placeholder="参加ルールや注意事項を入力してください"></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="button button-secondary">下書き保存</button>
+                <button type="submit" class="button button-primary">イベントを公開</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // 画像アップロード処理
+        const imageUpload = document.getElementById('imageUpload');
+        const imageInput = document.getElementById('eventImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const dropZone = document.getElementById('dropZone');
+
+        imageUpload.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', handleImageUpload);
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#2e51a2';
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#e1e4e8';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#e1e4e8';
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                imageInput.files = files;
+                handleImageUpload({ target: imageInput });
+            }
+        });
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    imagePreview.innerHTML = '';
+                    imagePreview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // フォーム送信処理
+        document.getElementById('eventForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // ここでフォームデータの処理を行う
+            alert('イベントを作成しました！');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店舗登録 - Tournament Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #1a237e;
+            color: white;
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .page-title {
+            margin-bottom: 2rem;
+            color: #1a237e;
+            font-size: 1.5rem;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group label.required::after {
+            content: '*';
+            color: #f44336;
+            margin-left: 0.3rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1a237e;
+            box-shadow: 0 0 0 2px rgba(26,35,126,0.1);
+        }
+
+        .address-fields {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-actions {
+            padding: 1.5rem 2rem;
+            background: #f8f9fa;
+            border-top: 1px solid #e1e4e8;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .button {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .button-primary {
+            background: #1a237e;
+            color: white;
+        }
+
+        .button-secondary {
+            background: #e1e4e8;
+            color: #333;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+
+            .main-content {
+                margin-left: 60px;
+            }
+
+            .form-content {
+                padding: 1.5rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Admin</h1>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">ダッシュボード</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">店舗管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">ユーザー管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">大会進行</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">データ分析</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">ランキング</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">広告・プロモーション</a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">店舗登録</h1>
+
+            <form class="form-container">
+                <div class="form-content">
+                    <div class="form-group">
+                        <label class="required">店舗名</label>
+                        <input type="text" required placeholder="例：トーナメントセンター東京店">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">所在地</label>
+                        <div class="address-fields">
+                            <input type="text" required placeholder="郵便番号（例：123-4567）">
+                            <input type="text" required placeholder="都道府県">
+                            <input type="text" required placeholder="市区町村">
+                            <input type="text" required placeholder="番地・建物名">
+                        </div>
+                        <p class="help-text">住所は正確に入力してください</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">担当者氏名</label>
+                        <input type="text" required placeholder="例：山田 太郎">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">メールアドレス</label>
+                        <input type="email" required placeholder="例：example@tournament.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="required">電話番号</label>
+                        <input type="tel" required placeholder="例：03-1234-5678">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="button button-secondary">キャンセル</button>
+                    <button type="submit" class="button button-primary">登録する</button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        // フォーム送信処理
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // バリデーションチェック
+            const inputs = e.target.querySelectorAll('input[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.style.borderColor = '#f44336';
+                } else {
+                    input.style.borderColor = '#e1e4e8';
+                }
+            });
+
+            if (isValid) {
+                alert('店舗情報を登録しました');
+            } else {
+                alert('必須項目を入力してください');
+            }
+        });
+
+        // キャンセルボタン
+        document.querySelector('.button-secondary').addEventListener('click', () => {
+            if (confirm('入力内容は保存されませんが、よろしいですか？')) {
+                window.location.href = './'; // 一覧ページへ戻る
+            }
+        });
+    </script>
+</body>
+</html>

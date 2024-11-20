@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大会ポータル</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        .header {
+            background-color: #2e51a2;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .kv-section {
+            height: 60vh;
+            background: linear-gradient(45deg, #2e51a2, #5d7ec0);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .kv-content {
+            text-align: center;
+            z-index: 2;
+            color: white;
+        }
+
+        .kv-content h2 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .search-section {
+            background-color: white;
+            padding: 2rem;
+            margin: -50px 2rem 0;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 3;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .search-form input, .search-form select {
+            padding: 0.8rem;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+        }
+
+        .tournament-list {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .tournament-card {
+            background: white;
+            padding: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .tournament-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .tournament-thumbnail {
+            width: 100%;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .tournament-info {
+            padding: 1.5rem;
+            color: #333;
+        }
+
+        .tournament-info h3 {
+            color: #2e51a2;
+            margin-bottom: 1rem;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #2e51a2, #5d7ec0);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(46,81,162,0.4);
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .kv-content h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 以下のHTML部分は前回と同じなので省略 -->
+    <header class="header">
+        <h1>店舗大会システム</h1>
+        <nav class="nav-menu">
+            <a href="https://ffsales-demo.eventos.tokyo/web/portal/660/event/12451/users/mypage/my-ticket" id="mypage">マイページ</a>
+            <a href="#" id="notifications">お知らせ</a>
+            <a href="#" id="settings">設定</a>
+            <a href="#" id="logout">ログアウト</a>
+        </nav>
+    </header>
+
+    <section class="kv-section">
+        <div class="kv-content">
+            <h2>BECOME A CHAMPION</h2>
+            <p>次なる戦いがあなたを待っている</p>
+        </div>
+    </section>
+
+    <section class="search-section">
+        <form class="search-form" id="searchForm">
+            <input type="date" placeholder="開始日" name="startDate">
+            <input type="date" placeholder="終了日" name="endDate">
+            <select name="type">
+                <option value="">大会種別</option>
+                <option value="free">無料大会</option>
+                <option value="paid">有料大会</option>
+            </select>
+            <input type="text" placeholder="開催場所" name="location">
+            <input type="text" placeholder="イベント名" name="eventName">
+            <button type="submit" class="button">検索</button>
+        </form>
+    </section>
+
+    <main class="tournament-list" id="tournamentList">
+        <!-- 大会リストが動的に追加されます -->
+    </main>
+
+    <script>
+        const tournaments = [
+            {
+                name: "週末トーナメント",
+                date: "2024-11-23",
+                location: "東京店",
+                type: "無料",
+                status: "エントリー受付中",
+                image: "/api/placeholder/400/200"
+            },
+            {
+                name: "チャンピオンシップ2024",
+                date: "2024-11-30",
+                location: "大阪店",
+                type: "有料",
+                status: "エントリー受付中",
+                image: "/api/placeholder/400/200"
+            },
+            {
+                name: "チャンピオンシップ2024",
+                date: "2024-11-30",
+                location: "大阪店",
+                type: "有料",
+                status: "エントリー受付中",
+                image: "/api/placeholder/400/200"
+            },
+            {
+                name: "チャンピオンシップ2024",
+                date: "2024-11-30",
+                location: "大阪店",
+                type: "有料",
+                status: "エントリー受付中",
+                image: "/api/placeholder/400/200"
+            }, {
+                name: "チャンピオンシップ2024",
+                date: "2024-11-30",
+                location: "大阪店",
+                type: "有料",
+                status: "エントリー受付中",
+                image: "/api/placeholder/400/200"
+            }
+        ];
+
+        function displayTournaments(tournaments) {
+            const list = document.getElementById('tournamentList');
+            list.innerHTML = '';
+            
+            tournaments.forEach(tournament => {
+                const card = document.createElement('div');
+                card.className = 'tournament-card';
+                card.innerHTML = `
+                    <div class="tournament-thumbnail" style="background-image: url('${tournament.image}')"></div>
+                    <div class="tournament-info">
+                        <h3>${tournament.name}</h3>
+                        <p>開催日: ${tournament.date}</p>
+                        <p>場所: ${tournament.location}</p>
+                        <p>種別: ${tournament.type}</p>
+                        <p>状態: ${tournament.status}</p>
+                        <button class="button" onclick="location.href='./event.html'" >
+                            詳細
+                        </button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            displayTournaments(tournaments);
+        });
+
+        function enterTournament(tournamentName) {
+            alert(`${tournamentName}へのエントリーを受け付けました。`);
+        }
+
+        displayTournaments(tournaments);
+
+        document.getElementById('logout').addEventListener('click', () => {
+            if(confirm('ログアウトしますか？')) {
+                alert('ログアウトしました');
+            }
+        });
+    </script>
+</body>
+</html>
